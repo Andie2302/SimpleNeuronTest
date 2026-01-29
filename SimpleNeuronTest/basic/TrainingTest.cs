@@ -5,7 +5,7 @@ public class TrainingTest
     public static void RunXorTraining()
     {
         // 2 Inputs, 2 Hidden-Neuronen, 1 Output
-        var net = new SimpleNetwork([2, 2, 1]);
+        var net = new SimpleNetwork([2, 10,10,10, 1]);
 
         double[][] inputs = [[0, 0], [0, 1], [1, 0], [1, 1]];
         double[][] targets = [[0], [1], [1], [0]]; // XOR Targets als Arrays
