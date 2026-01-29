@@ -1,52 +1,48 @@
 namespace SimpleNeuronTest.basic;
 
-public static class TrainingTest
+public class TrainingTest
 {
-    public static void Run()
+    public static void RunXorTraining()
     {
-        // 1. Netzwerk mit Topologie erstellen (2 Inputs, 2 Hidden, 1 Output)
-        var net = new SimpleNetwork(new int[] { 2, 2, 1 });
+        // 2 Inputs, 2 Hidden-Neuronen, 1 Output
+        var net = new SimpleNetwork([2, 2, 1]);
 
-        double[][] inputs = {
-            new double[] { 0, 0 },
-            new double[] { 0, 1 },
-            new double[] { 1, 0 },
-            new double[] { 1, 1 }
-        };
-        double[] targets = { 0, 1, 1, 0 }; // XOR
+        double[][] inputs = [[0, 0], [0, 1], [1, 0], [1, 1]];
+        double[][] targets = [[0], [1], [1], [0]]; // XOR Targets als Arrays
 
         Console.WriteLine("Training startet...");
 
-        for (int epoch = 0; epoch < 100000; epoch++)
+        for (var epoch = 0; epoch < 100_000; epoch++)
         {
-            for (int i = 0; i < inputs.Length; i++)
+            for (var i = 0; i < inputs.Length; i++)
             {
-                // Target muss jetzt ein Array sein
-                net.Train(inputs[i], new[] { targets[i] }, 0.1);
+                net.Train(inputs[i], targets[i], 0.1);
             }
         }
 
         Console.WriteLine("Training beendet.\nErgebnisse:");
-
         foreach (var input in inputs)
         {
             var result = net.Predict(input);
-            // Wir nehmen den ersten (und einzigen) Ausgangswert
             Console.WriteLine($"Input: {input[0]}, {input[1]} -> Output: {result[0]:F4}");
         }
 
-        // Export-Logik (angepasst an Layer-Struktur)
         ExportWeights(net);
     }
 
     private static void ExportWeights(SimpleNetwork net)
     {
-        Console.WriteLine("\n--- Gelernte Gewichte für den Export ---");
-        
-        // Da _layers private ist, müsstest du in SimpleNetwork 
-        // entweder eine Public Property für die Layer machen 
-        // oder eine Export-Methode direkt in SimpleNetwork schreiben.
-        // Für den Moment kommentieren wir den Export hier aus, 
-        // damit der Build erst mal durchläuft.
+        Console.WriteLine("\n--- Modularer Export ---");
+        for (int l = 0; l < net.Layers.Count; l++)
+        {
+            Console.WriteLine($"// Layer {l}");
+            var layer = net.Layers[l];
+            for (int n = 0; n < layer.Neurons.Length; n++)
+            {
+                var neuron = layer.Neurons[n];
+                Console.WriteLine($"// Neuron {n} weights: {string.Join(", ", neuron.Weights.Select(w => w.ToString("F8")))}");
+                Console.WriteLine($"// Neuron {n} bias: {neuron.Bias:F8}");
+            }
+        }
     }
 }
