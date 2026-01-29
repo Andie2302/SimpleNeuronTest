@@ -9,7 +9,12 @@ double[][] inputs = {
     new double[] { 1, 0 },
     new double[] { 1, 1 }
 };
-double[] targets = { 0, 0, 0, 1 };
+
+//logisches & ist das Ziel
+//double[] targets = { 0, 0, 0, 1 };
+
+//XOR ist das Ziel...
+double[] targets = { 0, 1, 1, 0 };
 
 Console.WriteLine("Training startet...");
 
@@ -25,6 +30,6 @@ Console.WriteLine("Training beendet.\nErgebnisse:");
 
 foreach (var input in inputs)
 {
-    double result = net.Predict(input);
+    var result = net.Predict(input);
     Console.WriteLine($"Input: {input[0]}, {input[1]} -> Output: {result:F4}");
 }
