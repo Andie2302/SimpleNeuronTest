@@ -11,7 +11,7 @@ public static class CircleTrainingTest
         Console.WriteLine("Training: Kreis-Erkennung startet...");
 
         // Wir trainieren mit 50.000 zufälligen Punkten
-        for (int i = 0; i < 50_000; i++)
+        for (int i = 0; i < 50_000_000; i++)
         {
             double x = rng.NextDouble(); // 0.0 bis 1.0
             double y = rng.NextDouble();
