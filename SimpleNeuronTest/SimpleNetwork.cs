@@ -2,49 +2,56 @@ namespace SimpleNeuronTest;
 
 public class SimpleNetwork
 {
-    public readonly Neuron[] HiddenLayer;
-    public readonly Neuron OutputNeuron;
+    private const int InputCount = 2;
+    private const int HiddenNeuronCount = 2;
+    private const int DefaultSeed = 42;
+
+    public Neuron[] HiddenLayer { get; }
+    public Neuron OutputNeuron { get; }
 
     public SimpleNetwork()
     {
-        var rng = new Random(42);
-        HiddenLayer = [new Neuron(2, rng), new Neuron(2, rng)];
-        OutputNeuron = new Neuron(2, rng);
+        var rng = new Random(DefaultSeed);
+
+        HiddenLayer = new Neuron[HiddenNeuronCount];
+        for (var i = 0; i < HiddenLayer.Length; i++)
+            HiddenLayer[i] = new Neuron(InputCount, rng);
+
+        OutputNeuron = new Neuron(HiddenNeuronCount, rng);
     }
 
     public double Predict(double[] inputs)
     {
-        var h1 = HiddenLayer[0].Forward(inputs);
-        var h2 = HiddenLayer[1].Forward(inputs);
-        return OutputNeuron.Forward([h1, h2]);
+        var hiddenOutputs = ForwardHidden(inputs);
+        return OutputNeuron.Forward(hiddenOutputs);
     }
 
     public void Train(double[] inputs, double target, double learningRate)
     {
-        // 1. Forward Pass
-        var actual = Predict(inputs);
-        var error = target - actual;
+        var prediction = Predict(inputs);
+        var error = target - prediction;
 
-        // 2. Deltas berechnen (Rückwärts)
-        // Wie viel Fehler hat das Output-Neuron?
         var outputDelta = OutputNeuron.CalculateDelta(error);
 
-        // Wie viel Fehler hat jedes einzelne Hidden-Neuron?
-        // Hier ist die Korrektur: Wir nutzen das Gewicht der jeweiligen Verbindung!
         var hiddenDeltas = new double[HiddenLayer.Length];
         for (var i = 0; i < HiddenLayer.Length; i++)
         {
-            // Der Fehler für Hidden-Neuron 'i' ist: 
-            // Delta des Outputs * Gewicht der Verbindung von Hidden 'i' zum Output
             var errorSignalForHidden = outputDelta * OutputNeuron.Weights[i];
             hiddenDeltas[i] = HiddenLayer[i].CalculateDelta(errorSignalForHidden);
         }
 
-        // 3. Gewichte anpassen (jetzt erst!)
         OutputNeuron.UpdateWeights(outputDelta, learningRate);
+
         for (var i = 0; i < HiddenLayer.Length; i++)
-        {
             HiddenLayer[i].UpdateWeights(hiddenDeltas[i], learningRate);
-        }
+    }
+
+    private double[] ForwardHidden(double[] inputs)
+    {
+        var hiddenOutputs = new double[HiddenLayer.Length];
+        for (var i = 0; i < HiddenLayer.Length; i++)
+            hiddenOutputs[i] = HiddenLayer[i].Forward(inputs);
+
+        return hiddenOutputs;
     }
 }
