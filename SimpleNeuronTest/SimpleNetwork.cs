@@ -2,13 +2,13 @@ namespace SimpleNeuronTest;
 
 public class SimpleNetwork
 {
-    public Neuron[] HiddenLayer;
-    public Neuron OutputNeuron;
+    public readonly Neuron[] HiddenLayer;
+    public readonly Neuron OutputNeuron;
 
     public SimpleNetwork()
     {
         var rng = new Random(42);
-        HiddenLayer = new Neuron[] { new Neuron(2, rng), new Neuron(2, rng) };
+        HiddenLayer = [new Neuron(2, rng), new Neuron(2, rng)];
         OutputNeuron = new Neuron(2, rng);
     }
 
@@ -16,14 +16,14 @@ public class SimpleNetwork
     {
         var h1 = HiddenLayer[0].Forward(inputs);
         var h2 = HiddenLayer[1].Forward(inputs);
-        return OutputNeuron.Forward(new double[] { h1, h2 });
+        return OutputNeuron.Forward([h1, h2]);
     }
 
     public void Train(double[] inputs, double target, double learningRate)
     {
         // 1. Forward Pass
-        double actual = Predict(inputs);
-        double error = target - actual;
+        var actual = Predict(inputs);
+        var error = target - actual;
 
         // 2. Deltas berechnen (Rückwärts)
         // Wie viel Fehler hat das Output-Neuron?
@@ -36,7 +36,7 @@ public class SimpleNetwork
         {
             // Der Fehler für Hidden-Neuron 'i' ist: 
             // Delta des Outputs * Gewicht der Verbindung von Hidden 'i' zum Output
-            double errorSignalForHidden = outputDelta * OutputNeuron.Weights[i];
+            var errorSignalForHidden = outputDelta * OutputNeuron.Weights[i];
             hiddenDeltas[i] = HiddenLayer[i].CalculateDelta(errorSignalForHidden);
         }
 
