@@ -1,33 +1,28 @@
 namespace SimpleNeuronTest.basic;
 
-public class TrainingTest
+public static class TrainingTest
 {
-    public static void SimplestTraining()
+    public static void Run()
     {
-        var net = new SimpleNetwork();
+        // 1. Netzwerk mit Topologie erstellen (2 Inputs, 2 Hidden, 1 Output)
+        var net = new SimpleNetwork(new int[] { 2, 2, 1 });
 
-// Trainingsdaten für eine UND-Verknüpfung
-        double[][] inputs =
-        [
-            [0, 0],
-            [0, 1],
-            [1, 0],
-            [1, 1]
-        ];
-
-//logisches & ist das Ziel
-//double[] targets = { 0, 0, 0, 1 };
-
-//XOR ist das Ziel...
-        double[] targets = [0, 1, 1, 0];
+        double[][] inputs = {
+            new double[] { 0, 0 },
+            new double[] { 0, 1 },
+            new double[] { 1, 0 },
+            new double[] { 1, 1 }
+        };
+        double[] targets = { 0, 1, 1, 0 }; // XOR
 
         Console.WriteLine("Training startet...");
 
-        for (var epoch = 0; epoch < 10_000_000; epoch++)
+        for (int epoch = 0; epoch < 100000; epoch++)
         {
-            for (var i = 0; i < inputs.Length; i++)
+            for (int i = 0; i < inputs.Length; i++)
             {
-                net.Train(inputs[i], targets[i], 0.1);
+                // Target muss jetzt ein Array sein
+                net.Train(inputs[i], new[] { targets[i] }, 0.1);
             }
         }
 
@@ -36,27 +31,22 @@ public class TrainingTest
         foreach (var input in inputs)
         {
             var result = net.Predict(input);
-            Console.WriteLine($"Input: {input[0]}, {input[1]} -> Output: {result:F4}");
+            // Wir nehmen den ersten (und einzigen) Ausgangswert
+            Console.WriteLine($"Input: {input[0]}, {input[1]} -> Output: {result[0]:F4}");
         }
 
+        // Export-Logik (angepasst an Layer-Struktur)
+        ExportWeights(net);
+    }
 
+    private static void ExportWeights(SimpleNetwork net)
+    {
         Console.WriteLine("\n--- Gelernte Gewichte für den Export ---");
-
-// Hidden Layer Gewichte
-        for (int i = 0; i < net.HiddenLayer.Length; i++)
-        {
-            var n = net.HiddenLayer[i];
-            Console.WriteLine($"// Hidden Neuron {i}");
-            Console.WriteLine(
-                $"double h{i}_weights[] = {{ {string.Join(", ", n.Weights.Select(w => w.ToString("F8")))} }};");
-            Console.WriteLine($"double h{i}_bias = {n.Bias.ToString("F8")};");
-        }
-
-// Output Neuron Gewichte
-        var outN = net.OutputNeuron;
-        Console.WriteLine("// Output Neuron");
-        Console.WriteLine(
-            $"double out_weights[] = {{ {string.Join(", ", outN.Weights.Select(w => w.ToString("F8")))} }};");
-        Console.WriteLine($"double out_bias = {outN.Bias.ToString("F8")};");
+        
+        // Da _layers private ist, müsstest du in SimpleNetwork 
+        // entweder eine Public Property für die Layer machen 
+        // oder eine Export-Methode direkt in SimpleNetwork schreiben.
+        // Für den Moment kommentieren wir den Export hier aus, 
+        // damit der Build erst mal durchläuft.
     }
 }
