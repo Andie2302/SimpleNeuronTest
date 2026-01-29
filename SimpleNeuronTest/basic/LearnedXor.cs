@@ -1,6 +1,6 @@
 
 
-namespace SimpleNeuronTest;
+namespace SimpleNeuronTest.basic;
 
 public class LearnedXor
 {
