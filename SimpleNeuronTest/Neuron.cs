@@ -2,7 +2,7 @@ namespace SimpleNeuronTest;
 
 public class Neuron
 {
-    public double[] Weights;
+    public readonly double[] Weights;
     public double Bias;
     private double[] _lastInputs = null!;
     public double LastOutput { get; private set; }
@@ -39,7 +39,7 @@ public class Neuron
     // SCHRITT 2: Wende die Korrektur an
     public void UpdateWeights(double delta, double learningRate)
     {
-        for (int i = 0; i < Weights.Length; i++)
+        for (var i = 0; i < Weights.Length; i++)
         {
             Weights[i] += learningRate * delta * _lastInputs[i];
         }
