@@ -60,7 +60,7 @@ Console.WriteLine($"double out_bias = {outN.Bias.ToString("F8")};");
 var xorGate = new LearnedXor();
 
 Console.WriteLine("Test der gelernten XOR-Klasse:");
-Console.WriteLine($"0, 0 -> {xorGate.Predict(0, 0):F4}");
-Console.WriteLine($"0, 1 -> {xorGate.Predict(0, 1):F4}");
-Console.WriteLine($"1, 0 -> {xorGate.Predict(1, 0):F4}");
-Console.WriteLine($"1, 1 -> {xorGate.Predict(1, 1):F4}");
+Console.WriteLine($"0, 0 -> {LearnedXor.Predict(0, 0):F4}");
+Console.WriteLine($"0, 1 -> {LearnedXor.Predict(0, 1):F4}");
+Console.WriteLine($"1, 0 -> {LearnedXor.Predict(1, 0):F4}");
+Console.WriteLine($"1, 1 -> {LearnedXor.Predict(1, 1):F4}");
