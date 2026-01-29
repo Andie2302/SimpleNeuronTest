@@ -1,6 +1,4 @@
-using SimpleNeuronTest.basic;
-
-namespace SimpleNeuronTest;
+namespace SimpleNeuronTest.basic;
 
 public class SimpleNetwork
 {
