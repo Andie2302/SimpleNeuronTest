@@ -2,47 +2,56 @@ namespace SimpleNeuronTest;
 
 public class Neuron
 {
-    public readonly double[] Weights;
-    public double Bias;
-    private double[] _lastInputs = null!;
+    private const double InitialWeightRange = 1.0;
+
+    private readonly double[] _weights;
+    private double[] _lastInputs = Array.Empty<double>();
+
+    public double[] Weights => _weights;
+    public double Bias { get; private set; }
     public double LastOutput { get; private set; }
 
     public Neuron(int inputCount, Random rng)
     {
-        Weights = new double[inputCount];
+        if (inputCount <= 0) throw new ArgumentOutOfRangeException(nameof(inputCount));
+        ArgumentNullException.ThrowIfNull(rng);
+
+        _weights = new double[inputCount];
         for (var i = 0; i < inputCount; i++)
-            Weights[i] = rng.NextDouble() * 2 - 1; 
-        
-        Bias = rng.NextDouble() * 2 - 1;
+            _weights[i] = NextWeight(rng);
+
+        Bias = NextWeight(rng);
     }
+
+    private static double NextWeight(Random rng) => (rng.NextDouble() * 2 * InitialWeightRange) - InitialWeightRange;
 
     private static double Sigmoid(double x) => 1.0 / (1.0 + Math.Exp(-x));
 
     public double Forward(double[] inputs)
     {
+        ArgumentNullException.ThrowIfNull(inputs);
+        if (inputs.Length != _weights.Length)
+            throw new ArgumentException($"Expected {nameof(inputs)} length {_weights.Length}, but got {inputs.Length}.", nameof(inputs));
+
         _lastInputs = (double[])inputs.Clone();
-        var sum = Bias;
-        for (var i = 0; i < Weights.Length; i++)
-            sum += inputs[i] * Weights[i];
-        
-        LastOutput = Sigmoid(sum);
+
+        var activation = Bias + _weights.Select((t, i) => inputs[i] * t).Sum();
+
+        LastOutput = Sigmoid(activation);
         return LastOutput;
     }
 
-    // SCHRITT 1: Berechne nur das "Delta" (den lokalen Gradienten)
     public double CalculateDelta(double errorSignal)
-    {
-        // f'(x) = f(x) * (1 - f(x))
-        return errorSignal * LastOutput * (1.0 - LastOutput);
-    }
+        => errorSignal * LastOutput * (1.0 - LastOutput);
 
-    // SCHRITT 2: Wende die Korrektur an
     public void UpdateWeights(double delta, double learningRate)
     {
-        for (var i = 0; i < Weights.Length; i++)
-        {
-            Weights[i] += learningRate * delta * _lastInputs[i];
-        }
+        if (_lastInputs.Length != _weights.Length)
+            throw new InvalidOperationException($"{nameof(Forward)} must be called before {nameof(UpdateWeights)}.");
+
+        for (var i = 0; i < _weights.Length; i++)
+            _weights[i] += learningRate * delta * _lastInputs[i];
+
         Bias += learningRate * delta;
     }
 }
