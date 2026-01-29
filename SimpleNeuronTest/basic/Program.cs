@@ -1,4 +1,5 @@
 ﻿using SimpleNeuronTest;
+using SimpleNeuronTest.basic;
 
 
 Console.WriteLine("Test der gelernten XOR-Klasse:");
