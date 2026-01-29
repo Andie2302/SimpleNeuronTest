@@ -23,18 +23,28 @@ public class SimpleNetwork
     {
         // 1. Forward Pass
         double actual = Predict(inputs);
-
-        // 2. Fehler am Ausgang berechnen (Soll - Ist)
         double error = target - actual;
 
-        // 3. Backward Pass
-        // Zuerst das Output-Neuron trainieren, es liefert den Fehler für den Hidden-Layer zurück
-        double hiddenErrorSignal = OutputNeuron.Train(error, learningRate);
+        // 2. Deltas berechnen (Rückwärts)
+        // Wie viel Fehler hat das Output-Neuron?
+        double outputDelta = OutputNeuron.CalculateDelta(error);
 
-        // Dann den Hidden-Layer trainieren
-        foreach (var neuron in HiddenLayer)
+        // Wie viel Fehler hat jedes einzelne Hidden-Neuron?
+        // Hier ist die Korrektur: Wir nutzen das Gewicht der jeweiligen Verbindung!
+        double[] hiddenDeltas = new double[HiddenLayer.Length];
+        for (int i = 0; i < HiddenLayer.Length; i++)
         {
-            neuron.Train(hiddenErrorSignal, learningRate);
+            // Der Fehler für Hidden-Neuron 'i' ist: 
+            // Delta des Outputs * Gewicht der Verbindung von Hidden 'i' zum Output
+            double errorSignalForHidden = outputDelta * OutputNeuron.Weights[i];
+            hiddenDeltas[i] = HiddenLayer[i].CalculateDelta(errorSignalForHidden);
+        }
+
+        // 3. Gewichte anpassen (jetzt erst!)
+        OutputNeuron.UpdateWeights(outputDelta, learningRate);
+        for (int i = 0; i < HiddenLayer.Length; i++)
+        {
+            HiddenLayer[i].UpdateWeights(hiddenDeltas[i], learningRate);
         }
     }
 }
