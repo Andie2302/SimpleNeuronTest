@@ -4,8 +4,6 @@ public class Neuron
 {
     public double[] Weights;
     public double Bias;
-    
-    // Speicher für den Rückweg
     private double[] _lastInputs = null!;
     public double LastOutput { get; private set; }
 
@@ -22,36 +20,29 @@ public class Neuron
 
     public double Forward(double[] inputs)
     {
-        // Wir speichern die Inputs und den Output für das Training
         _lastInputs = (double[])inputs.Clone();
         var sum = Bias;
         for (var i = 0; i < Weights.Length; i++)
-        {
             sum += inputs[i] * Weights[i];
-        }
+        
         LastOutput = Sigmoid(sum);
         return LastOutput;
     }
 
-    // Die mathematische Korrektur
-    public double Train(double errorSignal, double learningRate)
+    // SCHRITT 1: Berechne nur das "Delta" (den lokalen Gradienten)
+    public double CalculateDelta(double errorSignal)
     {
-        // Der Gradient: Wie stark ändert sich der Output bei kleiner Änderung der Summe?
-        // Ableitung von Sigmoid: f'(x) = f(x) * (1 - f(x))
-        double delta = errorSignal * LastOutput * (1.0 - LastOutput);
+        // f'(x) = f(x) * (1 - f(x))
+        return errorSignal * LastOutput * (1.0 - LastOutput);
+    }
 
-        // Wir berechnen den Fehler für den vorherigen Layer, BEVOR wir die Gewichte ändern
-        double errorForPreviousLayer = 0;
+    // SCHRITT 2: Wende die Korrektur an
+    public void UpdateWeights(double delta, double learningRate)
+    {
         for (int i = 0; i < Weights.Length; i++)
         {
-            errorForPreviousLayer += Weights[i] * delta;
-            
-            // Gewicht anpassen: Lernrate * Gradient * Input
             Weights[i] += learningRate * delta * _lastInputs[i];
         }
-
         Bias += learningRate * delta;
-        
-        return errorForPreviousLayer;
     }
 }
