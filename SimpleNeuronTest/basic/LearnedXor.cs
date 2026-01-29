@@ -2,7 +2,7 @@
 
 namespace SimpleNeuronTest.basic;
 
-public class LearnedXor
+public static class LearnedXor
 {
     private readonly record struct NeuronWeights(double W0, double W1, double Bias);
 
