@@ -1,4 +1,4 @@
-using SimpleNeuronTest;
+namespace SimpleNeuronTest;
 
 public class SimpleNetwork
 {
@@ -27,12 +27,12 @@ public class SimpleNetwork
 
         // 2. Deltas berechnen (Rückwärts)
         // Wie viel Fehler hat das Output-Neuron?
-        double outputDelta = OutputNeuron.CalculateDelta(error);
+        var outputDelta = OutputNeuron.CalculateDelta(error);
 
         // Wie viel Fehler hat jedes einzelne Hidden-Neuron?
         // Hier ist die Korrektur: Wir nutzen das Gewicht der jeweiligen Verbindung!
-        double[] hiddenDeltas = new double[HiddenLayer.Length];
-        for (int i = 0; i < HiddenLayer.Length; i++)
+        var hiddenDeltas = new double[HiddenLayer.Length];
+        for (var i = 0; i < HiddenLayer.Length; i++)
         {
             // Der Fehler für Hidden-Neuron 'i' ist: 
             // Delta des Outputs * Gewicht der Verbindung von Hidden 'i' zum Output
@@ -42,7 +42,7 @@ public class SimpleNetwork
 
         // 3. Gewichte anpassen (jetzt erst!)
         OutputNeuron.UpdateWeights(outputDelta, learningRate);
-        for (int i = 0; i < HiddenLayer.Length; i++)
+        for (var i = 0; i < HiddenLayer.Length; i++)
         {
             HiddenLayer[i].UpdateWeights(hiddenDeltas[i], learningRate);
         }
